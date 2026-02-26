@@ -135,3 +135,51 @@ A continuación se detalla el procedimiento a realizar en la integración.
   ]
 }
 ```
+
+
+## EJEMPLO EN PHP:
+
+```php
+<?php
+#
+# 
+function JsonEnviar($arregloJson, $url)
+{
+    $payload = json_encode($arregloJson);
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    curl_setopt($curl, CURLOPT_PORT, 80);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+    $json_response = curl_exec($curl);
+    $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close($curl);
+    #
+    return $json_response;
+}
+# TipoConsulta
+# 0=Está obligado a pagar (Consulta para el Deudor) 
+# 1=Ha cedido  (Consulta para el Cedente) 
+# 2=Ha adquirido (Consulta para el Cesionario)
+$arregloJson = array(
+    "ApiKey" => "--su-api-key--", // se configura en public/src/config.php
+    "Rut" => "11222333-4",
+    "ClaveSii" => "abc123",
+    "Desde" => "01012026",
+    "Hasta" => "01022026",
+    "Formato" => "TXT", // no cambiar
+    "TipoConsulta" => "0"
+);
+#
+# reemplazar por su url correcta
+$url = "https://localhost/proyectos/apisii/siifactoringconsultaperiodo/siifactoringconsultaperiodo/public/index.php";
+#
+# enviar la peticion a la api
+$retorno = JsonEnviar($arregloJson, $url);
+#
+# respuesta formato raw
+echo $retorno;
+
+```
